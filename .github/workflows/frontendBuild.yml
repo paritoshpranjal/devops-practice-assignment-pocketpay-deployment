@@ -1,0 +1,51 @@
+name: SonarCloud Frontend
+on:
+  push:
+    branches:
+      - main
+      - branch-*
+  pull_request:
+    types: [opened, synchronize, reopened]
+    
+jobs:
+  sonarcloud:
+    if: ( startsWith(github.head_ref, 'FE_') && github.event.pull_request.merged == false ) || ( github.event_name == 'push' )
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    timeout-minutes: 8
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Cache node modules
+        id: cache-nodemodules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules                  
+        with:
+          path: ${{ github.workspace }}/frontend/node_modules         # Change the path to the node_modules folder.
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      - name: Test and coverage
+        run:  npm run test -- --coverage --passWithNoTests
+      - name: SonarCloud Scan
+        with:
+         projectBaseDir: frontend
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PULLREQUEST_BASE: ${{ github.base_ref }}
+          SONAR_PULLREQUEST_BRANCH: ${{ github.head_ref }}
+          SONAR_PULLREQUEST_KEY: ${{ github.event.pull_request.number }}

@@ -1,0 +1,30 @@
+server:
+  port: 9002
+
+spring:
+  application:
+    name: BUSINESS-SERVICE
+  datasource:
+    url: jdbc:mysql://localhost:3306/pocket_pay
+    username: root
+    password: root
+  flyway:
+    baselineOnMigrate: true
+    locations: classpath:db/migration
+    validate-on-migrate: false
+    encoding: UTF-8
+    out-of-order: true
+    url: jdbc:mysql://3.22.208.121:30001/pocket_pay
+    user: root
+    password: Bootcamp@117!
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: false
+    hostname: localhost

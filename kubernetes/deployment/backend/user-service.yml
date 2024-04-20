@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+   name: backend-user-service-deployment
+   labels:
+      type: user-service-deployment
+      app: backend-us-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: user-service
+  template:
+    metadata:
+      name: user-service-pod
+      labels:
+        type: user-service
+    spec:
+      containers:
+      - name: pocketpay-backend-user-service
+        image: ghcr.io/paritosh-pranjal/bc-pocketpay-backend-eks-user-service:5
+        ports:
+        - containerPort: 9001
+        env:
+          - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+            value: http://service-registry-svc:8761/eureka/
+          - name: EUREKA_INSTANCE_HOSTNAME
+            value: user-service-svc
+          - name: SPRING_DATASOURCE_URL
+            value: jdbc:mysql://a4972788981fa4f5cba0438457ecd337-1025724467.us-east-2.elb.amazonaws.com:3306/pocket_pay 
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: database-secrets
+                key: username
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                  name: database-secrets
+                  key: password
+          - name: SPRING_FLYWAY_URL
+            value: jdbc:mysql://a4972788981fa4f5cba0438457ecd337-1025724467.us-east-2.elb.amazonaws.com:3306/pocket_pay 
+          - name: SPRING_FLYWAY_USER
+            valueFrom:
+              secretKeyRef:
+                name: database-secrets
+                key: username
+          - name: SPRING_FLYWAY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                  name: database-secrets
+                  key: password
+      imagePullSecrets: 
+      - name: ghcr-secret

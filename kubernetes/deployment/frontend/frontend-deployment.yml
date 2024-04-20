@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+   name: frontend-deployment
+   labels:
+      type: react-deployment
+      app: fe-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: frontend
+  template:
+    metadata:
+      name: frontend-pod
+      labels:
+        type: frontend
+    spec:
+      containers:
+      - name: pocketpay-frontend
+        image: ghcr.io/paritosh-pranjal/bc-pocketpay-frontend-eks:2
+        ports:
+        - containerPort: 80
+        env:
+        - name: BASE_URL
+          value: https://aef0eed3781404438b04860b972a737d-db7b654a3bfcb6f2.elb.us-east-2.amazonaws.com/
+        - name: REACT_APP_AUTH0_DOMAIN
+          value: "dev-ydpqs1wgbdxfupsv.us.auth0.com"
+        - name: REACT_APP_AUTH0_CLIENT_ID
+          value: "RiHYSXCHDMHTZMXeBIbEuIVVdxoLFjtw"
+      imagePullSecrets: 
+      - name: ghcr-secret

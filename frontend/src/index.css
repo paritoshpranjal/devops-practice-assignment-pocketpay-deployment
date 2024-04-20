@@ -1,0 +1,21 @@
+@font-face {
+  font-family: "Gerbera";
+  src: local("Gerbera-Regular"),
+    url("../public/assets/fonts/Gerbera.ttf") format("opentype");
+}
+/* Works for Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Works for Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
